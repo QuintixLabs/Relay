@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Local app data
+config/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Agent app atm
+
+agent/
