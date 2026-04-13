@@ -2289,6 +2289,7 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
   align-items: center;
   min-width: 18px;
   margin-left: 2px;
+  isolation: isolate;
 }
 
 .update-wrap[data-visible="false"] {
@@ -2316,9 +2317,9 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
 }
 
 .update-popover {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 10px);
+  position: fixed;
+  left: 0;
+  top: 0;
   transform: translateX(-50%);
   width: max-content;
   max-width: min(280px, calc(100vw - 32px));
@@ -2326,7 +2327,16 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--panel);
-  z-index: 5;
+  z-index: 24;
+  display: none;
+}
+
+.update-popover[data-open="false"] {
+  display: none;
+}
+
+.update-popover[data-open="true"] {
+  display: block;
 }
 
 .update-popover::before,

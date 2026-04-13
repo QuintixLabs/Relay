@@ -4,6 +4,30 @@
   Loads version info, links, and the update popup in settings.
 */
 
+function isUpdatePopoverOpen(updatePopover) {
+  return updatePopover?.dataset.open === "true";
+}
+
+function setUpdatePopoverOpen(updatePopover, updateTrigger, open) {
+  if (!updatePopover) {
+    return;
+  }
+
+  updatePopover.dataset.open = open ? "true" : "false";
+  updateTrigger?.setAttribute("aria-expanded", String(open));
+}
+
+function positionUpdatePopover(updatePopover, updateTrigger) {
+  if (!updatePopover || !updateTrigger) {
+    return;
+  }
+
+  const triggerRect = updateTrigger.getBoundingClientRect();
+  const popoverRect = updatePopover.getBoundingClientRect();
+  updatePopover.style.left = `${triggerRect.left + triggerRect.width / 2}px`;
+  updatePopover.style.top = `${triggerRect.top - popoverRect.height - 12}px`;
+}
+
 export function initializeMetaSettings({
   copyrightLabel,
   poweredLabel,
@@ -17,20 +41,47 @@ export function initializeMetaSettings({
     copyrightLabel.textContent = `© ${new Date().getFullYear()}`;
   }
 
-  updateTrigger?.addEventListener("click", () => {
-    const open = updatePopover.hidden;
-    updatePopover.hidden = !open;
-    updateTrigger.setAttribute("aria-expanded", String(open));
+  updateTrigger?.addEventListener("click", (event) => {
+    if (!updatePopover) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const nextOpen = !isUpdatePopoverOpen(updatePopover);
+    setUpdatePopoverOpen(updatePopover, updateTrigger, nextOpen);
+
+    if (nextOpen) {
+      requestAnimationFrame(() => {
+        positionUpdatePopover(updatePopover, updateTrigger);
+      });
+    }
+  });
+
+  window.addEventListener("scroll", () => {
+    if (isUpdatePopoverOpen(updatePopover)) {
+      positionUpdatePopover(updatePopover, updateTrigger);
+    }
+  }, { passive: true });
+
+  window.addEventListener("resize", () => {
+    if (isUpdatePopoverOpen(updatePopover)) {
+      positionUpdatePopover(updatePopover, updateTrigger);
+    }
+  });
+
+  updatePopover?.addEventListener("click", (event) => {
+    event.stopPropagation();
   });
 
   document.addEventListener("click", (event) => {
-    if (!updateWrap || !updatePopover || updatePopover.hidden) {
+    if (!updateWrap || !updatePopover || !isUpdatePopoverOpen(updatePopover)) {
       return;
     }
 
     if (!updateWrap.contains(event.target)) {
-      updatePopover.hidden = true;
-      updateTrigger?.setAttribute("aria-expanded", "false");
+      setUpdatePopoverOpen(updatePopover, updateTrigger, false);
     }
   });
 
@@ -69,8 +120,7 @@ async function loadMeta({
 
     if (updateWrap && updatePopover && updatePopoverCopy && updatePopoverLink) {
       updateWrap.dataset.visible = String(outdated);
-      updatePopover.hidden = true;
-      updateTrigger?.setAttribute("aria-expanded", "false");
+      setUpdatePopoverOpen(updatePopover, updateTrigger, false);
       updatePopoverCopy.textContent = `Current ${payload.version || "0.0.0"} · Latest ${latestVersion}`;
       updatePopoverLink.href = releasesUrl;
     }
