@@ -1,0 +1,9 @@
+services:
+  relay:
+    container_name: relay
+    image: ghcr.io/quintixlabs/relay:latest
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./config:/app/config
+    restart: unless-stopped
