@@ -223,6 +223,29 @@ export function slugifyDeviceId(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+// allow characters for MAC ADDRESS like :
+// :
+// -
+// tied
+function normalizeMacAddress(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) {
+    return "";
+  }
+
+  const hex = raw.replace(/[^a-fA-F0-9]/g, "");
+
+  if (hex.length !== 12) {
+    throw new Error("Invalid MAC address");
+  }
+
+  return hex
+    .toUpperCase()
+    .match(/.{1,2}/g)
+    ?.join(":") || "";
+}
+
 export function normalizeActions(actions) {
   const allowed = new Set(["shutdown", "restart", "sleep"]);
   return Array.from(new Set((Array.isArray(actions) ? actions : []).filter((action) => allowed.has(action))));
@@ -247,7 +270,7 @@ export function validateDeviceInput(input, existingDevices, currentDeviceId = nu
   const os = normalizeLegacyOs(input.os || "unknown");
   const host = String(input.host || "").trim();
   const token = String(input.token || "").trim();
-  const mac = String(input.mac || "").trim();
+  const mac = normalizeMacAddress(input.mac);
   const wolHost = String(input.wolHost || "").trim();
   const existingDevice = existingDevices.find((device) => device.id === currentDeviceId) || null;
   const port = Number(

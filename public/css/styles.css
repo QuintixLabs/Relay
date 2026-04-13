@@ -1858,6 +1858,16 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
   color: #fff;
 }
 
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--panel-2) inset;
+  box-shadow: 0 0 0 1000px var(--panel-2) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
 .device-token-unlock {
   font-size: 0.82rem;
 }
