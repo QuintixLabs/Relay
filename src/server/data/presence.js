@@ -18,6 +18,7 @@ import {
 const devicePresence = new Map();
 const HEARTBEAT_TIMEOUT_MS = 5000;
 const REVERSE_PROBE_TIMEOUT_MS = 2500;
+const REACHABLE_GRACE_MS = 15000;
 
 function isFresh(entry) {
   return Boolean(entry && Date.now() - entry.lastSeenAt <= HEARTBEAT_STALE_MS);
@@ -159,6 +160,7 @@ async function probePresence(deviceId, device = null) {
       probedHost: target.host,
       probedPort: target.port,
       reachable: response.ok,
+      lastReachableAt: response.ok ? Date.now() : nextEntry.lastReachableAt || 0,
       probePending: false
     });
   } catch {
@@ -173,6 +175,7 @@ async function probePresence(deviceId, device = null) {
       probedHost: target.host,
       probedPort: target.port,
       reachable: false,
+      lastReachableAt: nextEntry.lastReachableAt || 0,
       probePending: false
     });
   } finally {
@@ -197,7 +200,14 @@ export function getPresenceStatuses(devices) {
         void probePresence(device.id, device);
       }
 
-      const online = isFresh(entry) && entry?.reachable === true && !targetChanged;
+      const fresh = isFresh(entry);
+      const recentlyReachable =
+        Number(entry?.lastReachableAt || 0) > 0 &&
+        Date.now() - Number(entry.lastReachableAt || 0) <= REACHABLE_GRACE_MS;
+      const online =
+        fresh &&
+        (!targetChanged || entry?.probePending === true) &&
+        (entry?.reachable === true || recentlyReachable || fresh);
       return [
         device.id,
         {
@@ -225,6 +235,7 @@ export async function recordPresence(deviceId, payload, device = null) {
     os: normalizePresenceOs(payload.platform || payload.os),
     reachable: previousEntry?.reachable === true,
     probePending: false,
+    lastReachableAt: Number(previousEntry?.lastReachableAt || 0),
     probedHost: previousEntry?.probedHost || "",
     probedPort: Number(previousEntry?.probedPort || 0)
   });
