@@ -10,6 +10,15 @@
 <a href="#-using-agent">🔌 Using Agent</a>
 </p>
 
+> [!WARNING]
+> **Note about macOS support**
+>
+> This project was built mainly for my own use and has only been tested on Windows and Linux.
+> 
+> I do not have access to a macOS device, so the Electron app and the app itself have not been tested there. Things may not work as expected on macOS.
+> 
+> If you run into issues, feel free to open an issue. PRs are also welcome if you want to help improve macOS support.
+
 ## ⭐ Features
 
 - Power actions for **Windows**, **Linux**, and **macOS**
