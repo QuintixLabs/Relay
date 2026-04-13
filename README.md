@@ -75,16 +75,91 @@ docker run -d \
   ghcr.io/quintixlabs/relay:latest
 ```
 
-Or use our [docker-compose.yml](https://github.com/QuintixLabs/Relay/blob/master/docker-compose.yml), which is simpler. Just run:
+Or use our [docker-compose.yml](https://github.com/QuintixLabs/Relay/blob/master/docker-compose.yml), which is simpler.
+
+Run these in the same folder as your `docker-compose.yml` file:
 
 ```bash
+mkdir -p ./config
 docker compose up -d
 ```
+
+#
+
+### 🔓 Allow the Relay ports on your machine
+
+After you host Relay on your machine, the next step is allowing the ports Relay needs so the Hub is reachable and
+**Wake-on-LAN** works properly.
+
+- `3010/tcp` is used for the Relay Hub
+
+- `9/udp` is used for Wake-on-LAN
+
+#### Linux
+
+If you are hosting Relay on Linux, install [firewalld](https://github.com/firewalld/firewalld) on your distro first.
+
+On Arch Linux:
+
+```bash
+sudo pacman -S firewalld
+sudo systemctl enable --now firewalld
+```
+
+Then allow the Relay ports:
+
+```bash
+sudo firewall-cmd --permanent --add-port=3010/tcp
+sudo firewall-cmd --permanent --add-port=9/udp
+sudo firewall-cmd --reload
+```
+
+<details>
+<summary><strong>⎇ Remove the ports on Linux</strong></summary>
+<br />
+
+If you want to remove them later, run:
+
+```bash
+sudo firewall-cmd --permanent --remove-port=3010/tcp
+sudo firewall-cmd --permanent --remove-port=9/udp
+sudo firewall-cmd --reload
+```
+
+</details>
+
+#
+
+#### Windows
+
+If you are hosting Relay on Windows, open PowerShell as Administrator and run:
+
+```powershell
+New-NetFirewallRule -DisplayName "Relay Hub TCP 3010" -Direction Inbound -Protocol TCP -LocalPort 3010 -Action Allow
+New-NetFirewallRule -DisplayName "Relay Wake UDP 9" -Direction Inbound -Protocol UDP -LocalPort 9 -Action Allow
+```
+
+<details>
+<summary><strong>⎇ Remove the ports on Windows</strong></summary>
+<br />
+
+If you want to remove them later, run:
+
+```powershell
+Remove-NetFirewallRule -DisplayName "Relay Hub TCP 3010"
+Remove-NetFirewallRule -DisplayName "Relay Wake UDP 9"
+```
+
+</details>
+
+#
 
 > [!IMPORTANT]
 > Before setting up **[Relay Agent](https://github.com/QuintixLabs/Relay-Agent)**, make sure the device you want to control can actually reach your **Relay Hub**.
 >
 > If that device cannot open your Hub URL, pairing will *fail*
+
+#
 
 <details open>
 <summary><strong>⭐ Recommended: Reach Relay Hub over Tailscale</strong></summary>
