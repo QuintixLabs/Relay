@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relay</title>
+
+    <!-- External libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- Icons -->
+    <link rel="icon" href="/assets/logos/svg/logo-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="/assets/logos/svg/logo-light.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+
+    <!-- Local styles -->
+    <link rel="stylesheet" href="/css/styles.css?v=%APP_VERSION%" />
+
+    <!-- Basic meta tags -->
+    <meta name="theme-color" content="#08090A">
+    <meta name="description" content="Create your own self-hosted power control system with Relay. Shut down, restart, sleep, or wake your devices from anywhere.">
+    <meta name="keywords" content="relay, open-source, open source, foss, privacy, self-hosted, remote power control, shutdown, restart, sleep, device management, remote access, home server, homelab, linux, windows, automation, hub, web interface">
+
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="Relay">
+    <meta property="og:description" content="Create your own self-hosted power control system with Relay. Shut down, restart, sleep, or wake your devices from anywhere.">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:title" content="Relay">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="Create your own self-hosted power control system with Relay. Shut down, restart, sleep, or wake your devices from anywhere.">
+    <meta name="twitter:image" content="/assets/banners/banner-2.png">
+
+  </head>
+  <body>
+
+    <!-- No JS Warning -->
+    <noscript>
+      <div class="noscript-overlay">
+        <div class="noscript-overlay-card">
+          <h2>JavaScript required</h2>
+          <p>
+            Relay needs JavaScript to load your devices, spaces, and controls. No ads, trackers, analytics, or third-party scripts are used here.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <!-- App shell -->
+    <main class="app-shell" hidden>
+      <!-- Login and first-run setup -->
+      <section id="auth-screen" class="auth-screen">
+        <form id="token-form" class="auth-panel">
+          <!-- Auth branding and state copy -->
+          <div class="auth-copy">
+            <p class="auth-title brand-title">
+                <img src="/assets/logos/svg/logo-light.svg" alt="" class="brand-title-logo" />
+                Relay
+              </p>
+            <p id="auth-subtitle" class="auth-subtitle">Log in</p>
+          </div>
+          <div id="auth-setup-blocked" class="auth-setup-blocked" hidden>
+            <div class="auth-setup-blocked-card">
+              <h2>Finish setup locally</h2>
+              <p>First-time setup must be completed on the machine running Relay. Start Relay on 127.0.0.1 or localhost, finish setup, then expose it remotely.</p>
+            </div>
+          </div>
+          <div id="auth-form-content">
+          <!-- Main password entry -->
+          <div class="auth-field">
+            <div class="token-input-wrap">
+              <span class="auth-input-icon" aria-hidden="true">
+                <span class="icon" style="--icon:url('/assets/icons/ui/lock.svg')" aria-hidden="true"></span>
+              </span>
+              <input
+                id="token"
+                name="token"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Password"
+              />
+              <button id="toggle-token" class="toggle-token" type="button" aria-label="Show token">
+                <span class="icon" style="--icon:url('/assets/icons/ui/eye.svg')" aria-hidden="true"></span>
+              </button>
+            </div>
+            <button id="login-submit-button" class="auth-icon-submit" type="submit" aria-label="Enter token">
+              <span class="icon" style="--icon:url('/assets/icons/ui/arrow-right.svg')" aria-hidden="true"></span>
+            </button>
+          </div>
+          <!-- Setup-only password confirmation -->
+          <div id="setup-confirm-wrap" class="token-input-wrap auth-confirm-wrap" hidden>
+            <span class="auth-input-icon" aria-hidden="true">
+              <span class="icon" style="--icon:url('/assets/icons/ui/shield-lock-outline.svg')" aria-hidden="true"></span>
+            </span>
+            <input
+              id="setup-confirm"
+              name="setup-confirm"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Confirm password"
+            />
+            <button id="toggle-setup-confirm" class="toggle-token" type="button" aria-label="Show confirm password">
+              <span class="icon" style="--icon:url('/assets/icons/ui/eye.svg')" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p id="auth-message" class="auth-message"></p>
+          <!-- Session preference -->
+          <label class="auth-remember">
+            <input id="remember-device" type="checkbox" />
+            <span class="check-indicator" aria-hidden="true"></span>
+            <span class="check-title">Remember this device for 7 days</span>
+          </label>
+          <!-- Setup-only submit action -->
+          <button id="setup-submit-button" class="primary-button auth-setup-submit" type="submit" hidden>
+            Create my instance
+          </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Main Hub -->
+      <section id="hub" class="hub" hidden>
+        <!-- Top bar and quick actions -->
+        <header class="topbar">
+          <div class="topbar-brand">
+            <button id="sidebar-toggle" class="icon-button" type="button" aria-label="Toggle spaces sidebar" aria-expanded="false">
+              <span class="icon" style="--icon:url('/assets/icons/ui/sidebar.svg')" aria-hidden="true"></span>
+            </button>
+            <div>
+              <p class="app-title brand-title">
+                <img src="/assets/logos/svg/logo-light.svg" alt="" class="brand-title-logo" />
+                <span>Hub</span>
+              </p>
+              <p id="connection-state" class="app-state">Manage your devices.</p>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <button id="device-search-trigger" class="search-command-button" type="button" aria-label="Search devices">
+              <span class="icon" style="--icon:url('/assets/icons/ui/search-16.svg')" aria-hidden="true"></span>
+              <span class="search-command-label">Search</span>
+              <span class="search-command-shortcut" aria-hidden="true">
+                <span class="search-command-shortcut-key">Ctrl</span>
+                <span class="search-command-shortcut-key">K</span>
+              </span>
+            </button>
+            <button id="add-device" class="icon-button" type="button" aria-label="Add device">
+              <span class="icon" style="--icon:url('/assets/icons/ui/plus.svg')" aria-hidden="true"></span>
+            </button>
+            <div class="menu" data-menu>
+              <button id="menu-trigger" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="icon" style="--icon:url('/assets/icons/ui/ellipsis.svg')" aria-hidden="true"></span>
+              </button>
+              <div id="menu-panel" class="menu-panel" data-state="closed">
+                <a href="/settings" class="menu-item">
+                  <span class="icon" style="--icon:url('/assets/icons/ui/baseline-settings.svg')" aria-hidden="true"></span>
+                  <span>Settings</span>
+                </a>
+                <button id="forget-token" class="menu-item" type="button">
+                  <span class="icon" style="--icon:url('/assets/icons/ui/logout.svg')" aria-hidden="true"></span>
+                  <span>Log out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Global feedback layers -->
+        <section id="banner" class="banner" hidden aria-live="polite"></section>
+        <section id="live-region" class="sr-only" aria-live="polite" aria-atomic="true"></section>
+        <section id="toast-stack" class="toast-stack" aria-live="polite"></section>
+        <div id="sidebar-scrim" class="sidebar-scrim" data-visible="false"></div>
+        <div id="hub-layout" class="hub-layout" data-sidebar-open="false">
+          <!-- Spaces sidebar -->
+          <aside class="spaces-sidebar">
+            <button id="close-sidebar" class="icon-button sidebar-close-button" type="button" aria-label="Close spaces sidebar">
+              <span class="icon" style="--icon:url('/assets/icons/ui/x.svg')" aria-hidden="true"></span>
+            </button>
+            <div class="spaces-sidebar-body">
+              <div class="section-heading">
+                <div class="section-copy">
+                  <p class="section-title">Spaces</p>
+                  <p id="section-subtitle" class="section-subtitle">Keep devices organized.</p>
+                </div>
+                <div class="spaces-sidebar-actions">
+                  <button id="add-space" class="icon-button" type="button" aria-label="Add space">
+                    <span class="icon" style="--icon:url('/assets/icons/ui/plus.svg')" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+              <p id="space-status" class="space-status" aria-live="polite"></p>
+              <section id="space-list" class="space-list"></section>
+            </div>
+          </aside>
+
+          <!-- Device list panel -->
+          <section class="devices-panel">
+            <div class="device-count-bar" aria-hidden="true">
+              <span id="device-count-value" class="device-count-value">0</span>
+              <span class="device-count-line"></span>
+            </div>
+            <section id="device-grid" class="device-grid"></section>
+          </section>
+        </div>
+      </section>
+
+      <!-- Search devices -->
+      <dialog id="device-search-dialog" class="device-dialog command-dialog">
+        <form id="device-search-form" class="device-form command-form" method="dialog">
+          <div class="command-search-field">
+            <span class="icon" style="--icon:url('/assets/icons/ui/search-16.svg')" aria-hidden="true"></span>
+            <input
+              id="device-search-input"
+              type="search"
+              placeholder="Search devices"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Search devices"
+            />
+            <button id="close-device-search" class="command-search-escape" type="button" aria-label="Close device search">
+              <span class="command-search-escape-key">Esc</span>
+            </button>
+          </div>
+
+          <div id="device-search-results" class="device-search-results" data-visible="false"></div>
+        </form>
+      </dialog>
+
+      <!-- Add or edit a device -->
+      <dialog id="device-dialog" class="device-dialog">
+        <form id="device-form" class="device-form" method="dialog">
+          <!-- Device modal heading -->
+          <header class="device-form-header">
+            <div>
+              <p id="device-dialog-title" class="app-title">Add device</p>
+              <p id="device-dialog-copy" class="app-state">Save a machine to your Hub.</p>
+            </div>
+          </header>
+
+          <!-- Device identity, location, and wake settings -->
+          <div class="device-form-grid">
+            <!-- Basic device identity -->
+            <div class="field">
+              <span>Name</span>
+              <input name="name" type="text" placeholder="fr0st" maxlength="32" required />
+            </div>
+
+            <!-- Space assignment -->
+            <div class="field">
+              <span>Space</span>
+              <span class="select-wrap">
+                <select id="device-space" name="spaceId">
+                  <option value="">All devices</option>
+                </select>
+                <span class="icon select-icon" style="--icon:url('/assets/icons/ui/chevrons-up-down.svg')" aria-hidden="true"></span>
+              </span>
+            </div>
+
+            <!-- Space assignment -->
+            <div class="field">
+              <span>Tailscale IP / Host</span>
+              <input name="host" type="text" placeholder="100.82.41.193 / pc.example.com" required />
+            </div>
+
+            <!-- Shared secret used by the device agent -->
+            <div class="field">
+              <span class="field-label-row">
+                <span>Agent token</span>
+                <span id="unlock-device-token-wrap" class="field-inline-action" hidden>
+                  <span aria-hidden="true">·</span>
+                  <button id="unlock-device-token" class="text-button device-token-unlock" type="button">Change token</button>
+                </span>
+              </span>
+              <div class="token-input-wrap device-token-wrap">
+                <input
+                  name="token"
+                  type="password"
+                  placeholder="Device Agent Token"
+                  minlength="8"
+                  maxlength="128"
+                  pattern="\S{8,128}"
+                  required
+                />
+                <button id="toggle-device-token" class="toggle-token" type="button" aria-label="Show agent token">
+                  <span class="icon" style="--icon:url('/assets/icons/ui/eye.svg')" aria-hidden="true"></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Power actions this device can expose -->
+            <fieldset class="field field-full checkbox-field">
+              <legend>Actions</legend>
+              <div class="checkbox-grid">
+                <label class="check-card">
+                  <input type="checkbox" name="actions" value="shutdown" checked />
+                  <span class="check-indicator" aria-hidden="true"></span>
+                  <span class="check-title">Shutdown</span>
+                </label>
+                <label class="check-card">
+                  <input type="checkbox" name="actions" value="restart" checked />
+                  <span class="check-indicator" aria-hidden="true"></span>
+                  <span class="check-title">Restart</span>
+                </label>
+                <label class="check-card">
+                  <input type="checkbox" name="actions" value="sleep" checked />
+                  <span class="check-indicator" aria-hidden="true"></span>
+                  <span class="check-title">Sleep</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Wake-on-LAN settings -->
+            <div class="field">
+              <span>MAC address</span>
+              <input name="mac" type="text" placeholder="AA:BB:CC:DD:EE:FF" />
+            </div>
+
+            <div class="field">
+              <span class="field-label-row"><span>Wake host</span>·<small class="field-optional-label">Optional</small></span>
+              <input name="wolHost" type="text" placeholder="192.168.1.255" />
+            </div>
+
+            <div class="field">
+              <span class="field-label-row"><span>Wake port</span>·<small class="field-optional-label">Optional</small></span>
+              <input name="wolPort" type="number" placeholder="9" min="1" max="65535" />
+            </div>
+
+          </div>
+
+          <!-- Device form feedback -->
+          <p id="device-form-message" class="form-message"></p>
+
+          <!-- Device form actions -->
+          <footer class="device-form-actions">
+            <button id="device-submit-button" class="primary-button" type="submit">Save device</button>
+            <button id="cancel-device-form" class="secondary-button" type="button">Cancel</button>
+          </footer>
+        </form>
+      </dialog>
+
+      <!-- Confirm password before revealing sensitive device data -->
+      <dialog id="device-secret-dialog" class="device-dialog confirm-dialog">
+        <form id="device-secret-form" class="device-form" method="dialog">
+          <header class="device-form-header">
+            <div>
+              <p id="device-secret-title" class="app-title">Confirm your password</p>
+              <p id="device-secret-copy" class="app-state">Enter your current Hub password to continue.</p>
+            </div>
+          </header>
+
+          <div class="field">
+            <span>Current password</span>
+            <div class="token-input-wrap device-token-wrap">
+              <input id="device-secret-password" name="password" type="password" autocomplete="current-password" placeholder="Current password" required />
+              <button id="toggle-device-secret-password" class="toggle-token" type="button" aria-label="Show current password">
+                <span class="icon" style="--icon:url('/assets/icons/ui/eye.svg')" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+
+          <p id="device-secret-message" class="form-message"></p>
+
+          <footer class="device-form-actions">
+            <button id="device-secret-submit" class="primary-button" type="submit">Continue</button>
+            <button id="cancel-device-secret" class="secondary-button" type="button">Cancel</button>
+          </footer>
+        </form>
+      </dialog>
+    </main>
+
+    <!-- Device row template -->
+    <template id="device-template">
+      <article class="device-row">
+        <div class="row-main">
+          <span class="device-icon">
+            <span class="icon" aria-hidden="true"></span>
+          </span>
+          <div class="row-copy">
+            <h2 class="device-name"></h2>
+            <div class="device-meta-row">
+              <p class="device-meta"></p>
+              <span class="device-presence" data-state="unknown">
+                <span class="device-presence-dot"></span>
+                <span class="device-presence-label"></span>
+              </span>
+            </div>
+            <button class="device-space-pill" type="button">
+              <span class="icon" style="--icon:url('/assets/icons/ui/panels-top-left.svg')" aria-hidden="true"></span>
+              <span></span>
+            </button>
+          </div>
+          <div class="row-top-actions">
+            <button class="row-download-trigger" type="button" aria-label="Download agent config" title="Download agent config">
+              <span class="icon" style="--icon:url('/assets/icons/ui/download.svg')" aria-hidden="true"></span>
+            </button>
+            <button class="row-drag-handle" type="button" aria-label="Reorder device">
+              <span class="icon" style="--icon:url('/assets/icons/ui/drag.svg')" aria-hidden="true"></span>
+            </button>
+            <button class="row-edit-trigger" type="button" aria-label="Edit device">
+              <span class="icon" style="--icon:url('/assets/icons/ui/edit-outline-rounded.svg')" aria-hidden="true"></span>
+            </button>
+            <button class="row-delete-trigger" type="button" aria-label="Delete device">
+              <span class="icon" style="--icon:url('/assets/icons/ui/trash.svg')" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        <div class="button-grid"></div>
+        <p class="device-status" aria-live="polite"></p>
+      </article>
+    </template>
+
+    <!-- Space row template -->
+    <template id="space-template">
+      <article class="space-item">
+        <button class="space-select" type="button">
+          <span class="space-name"></span>
+        </button>
+        <div class="space-item-actions">
+          <button class="space-edit" type="button" aria-label="Edit space">
+            <span class="icon" style="--icon:url('/assets/icons/ui/pencil-line.svg')" aria-hidden="true"></span>
+          </button>
+          <button class="space-delete" type="button" aria-label="Delete space">
+            <span class="icon" style="--icon:url('/assets/icons/ui/x.svg')" aria-hidden="true"></span>
+          </button>
+        </div>
+      </article>
+    </template>
+
+    <!-- Move device to a space -->
+    <dialog id="assign-space-dialog" class="device-dialog confirm-dialog">
+      <form id="assign-space-form" class="device-form" method="dialog">
+        <!-- Assign-space heading -->
+        <header class="device-form-header">
+          <div>
+            <p id="assign-space-title" class="app-title"></p>
+            <p id="assign-space-copy" class="app-state"></p>
+          </div>
+        </header>
+
+        <!-- Assign-space options and feedback -->
+        <div id="assign-space-options" class="assign-space-options"></div>
+        <p id="assign-space-message" class="form-message"></p>
+
+        <!-- Assign-space actions -->
+        <footer class="device-form-actions">
+          <button class="primary-button" type="submit">Save space</button>
+          <button id="cancel-assign-space" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Delete a space -->
+    <dialog id="space-delete-dialog" class="device-dialog confirm-dialog">
+      <form id="space-delete-form" class="device-form" method="dialog">
+        <!-- Delete-space heading -->
+        <header class="device-form-header">
+          <div>
+            <p id="space-delete-title" class="app-title"></p>
+            <p id="space-delete-copy" class="app-state"></p>
+          </div>
+        </header>
+
+        <!-- Delete-space actions -->
+        <footer class="device-form-actions">
+          <button class="primary-button danger-button" type="submit">Delete</button>
+          <button id="cancel-space-delete" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Delete a device -->
+    <dialog id="delete-dialog" class="device-dialog confirm-dialog">
+      <form id="delete-form" class="device-form" method="dialog">
+        <!-- Delete-device heading -->
+        <header class="device-form-header">
+          <div>
+            <p id="delete-title" class="app-title"></p>
+            <p id="delete-copy" class="app-state"></p>
+          </div>
+        </header>
+
+        <!-- Delete-device actions -->
+        <footer class="device-form-actions">
+          <button class="primary-button danger-button" type="submit">Delete</button>
+          <button id="cancel-delete" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Add or edit a space -->
+    <dialog id="space-dialog" class="device-dialog confirm-dialog">
+      <form id="space-form" class="device-form" method="dialog">
+        <!-- Space modal heading -->
+        <header class="device-form-header">
+          <div>
+            <p id="space-dialog-title" class="app-title">Add space</p>
+            <p id="space-dialog-copy" class="app-state">Create a new space for your devices.</p>
+          </div>
+        </header>
+
+        <!-- Space name field -->
+        <div class="field field-full">
+          <span>Name</span>
+          <input id="space-name" name="name" type="text" placeholder="Office" maxlength="24" required />
+        </div>
+
+        <!-- Space form feedback -->
+        <p id="space-form-message" class="form-message"></p>
+
+        <!-- Space form actions -->
+        <footer class="device-form-actions">
+          <button class="primary-button" type="submit">Save space</button>
+          <button id="cancel-space" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+
+    <!-- Local scripts -->
+    <script type="module" src="/js/hub/index.js?v=%APP_VERSION%"></script>
+
+  </body>
+</html>

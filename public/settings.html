@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow">
+    <title>Relay - Settings</title>
+
+    <!-- External libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- Icons -->
+    <link rel="icon" href="/assets/logos/svg/logo-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="/assets/logos/svg/logo-light.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+
+    <!-- Local styles -->
+    <link rel="stylesheet" href="/css/styles.css?v=%APP_VERSION%" />
+
+  </head>
+  <body>
+
+    <!-- No JS Warning -->
+    <noscript>
+      <div class="noscript-overlay">
+        <div class="noscript-overlay-card">
+          <h2>JavaScript required</h2>
+          <p>
+            Relay needs JavaScript to load settings and live app data. No ads, trackers, analytics, or third-party scripts are used here.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <!-- Settings shell -->
+    <main class="settings-shell" hidden>
+      <!-- Settings top bar -->
+      <header class="settings-topbar">
+        <a href="/" class="icon-button" aria-label="Back">
+          <span class="icon" style="--icon:url('/assets/icons/ui/arrow-left.svg')" aria-hidden="true"></span>
+        </a>
+        <div>
+          <p class="app-title brand-title">
+                <img src="/assets/logos/svg/logo-light.svg" alt="" class="brand-title-logo" />
+                <span>Settings</span>
+              </p>
+          <p class="app-state">Tune how Relay behaves.</p>
+        </div>
+      </header>
+
+      <!-- Settings cards -->
+      <section class="settings-group">
+        <!-- Password management -->
+        <article class="settings-card">
+          <div class="settings-copy">
+            <h1 class="settings-title">Change password</h1>
+            <p class="settings-description">Update the password for this instance.</p>
+          </div>
+          <button id="open-password-dialog" class="primary-button settings-card-button" type="button">
+            Change password
+          </button>
+        </article>
+
+        <!-- Backup import and export -->
+        <article class="settings-card">
+          <div class="settings-copy">
+            <h2 class="settings-title">Backup</h2>
+            <p class="settings-description">Export or import your spaces, devices, and order as one Relay backup file.</p>
+          </div>
+          <div class="settings-card-actions">
+            <button id="export-backup" class="primary-button settings-card-button" type="button">
+              Export
+            </button>
+            <button id="import-backup" class="secondary-button settings-card-button" type="button">
+              Import
+            </button>
+          </div>
+          <input id="import-backup-input" type="file" accept="application/json,.json" hidden />
+        </article>
+
+        <!-- Feedback mode preference -->
+        <article class="settings-card">
+          <div class="settings-copy">
+            <h2 class="settings-title">Feedback mode</h2>
+            <p class="settings-description">Choose how action results are shown in the app.</p>
+          </div>
+          <div class="settings-options" role="radiogroup" aria-label="Feedback mode">
+            <label class="choice-card">
+              <input type="radio" name="feedback-mode" value="inline" />
+              <span class="choice-dot" aria-hidden="true"></span>
+              <span class="choice-copy">
+                <span class="choice-title">Inline</span>
+                <span class="choice-description">Show a short message under the selected item.</span>
+              </span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="feedback-mode" value="toast" />
+              <span class="choice-dot" aria-hidden="true"></span>
+              <span class="choice-copy">
+                <span class="choice-title">Toast</span>
+                <span class="choice-description">Show pop-up notifications with a timer bar.</span>
+              </span>
+            </label>
+          </div>
+        </article>
+
+        <!-- Feedback duration preference -->
+        <article class="settings-card">
+          <div class="settings-copy">
+            <h2 class="settings-title">Feedback duration</h2>
+            <p class="settings-description">How long inline messages and toast notifications stay visible.</p>
+          </div>
+          <label class="select-field">
+            <span class="sr-only">Feedback duration</span>
+            <span class="select-wrap">
+              <select id="toast-duration">
+                <option value="2500">Short (2.5s)</option>
+                <option value="4000">Default (4s)</option>
+                <option value="6000">Long (6s)</option>
+              </select>
+              <span class="icon select-icon" style="--icon:url('/assets/icons/ui/chevrons-up-down.svg')" aria-hidden="true"></span>
+            </span>
+          </label>
+        </article>
+
+        <!-- Destructive reset action -->
+        <article class="settings-card settings-card-danger">
+          <div class="settings-copy">
+            <h2 class="settings-title">Danger zone</h2>
+            <p class="settings-description">Reset Relay devices, spaces, and saved order back to a clean start.</p>
+          </div>
+          <button id="open-reset-dialog" class="primary-button settings-card-button danger-button" type="button">
+            Reset Relay data
+          </button>
+        </article>
+      </section>
+
+    <!-- Footer and external links -->
+    <footer class="settings-footer">
+        <div class="settings-footer-copy">
+          <p class="settings-footer-line">
+            <span id="settings-powered" class="settings-version">Powered by Relay</span>
+            <span id="update-wrap" class="update-wrap" data-visible="false">
+              <button id="update-trigger" class="update-trigger" type="button" aria-label="Update available" aria-expanded="false">
+                <span class="icon" style="--icon:url('/assets/icons/ui/triangle-alert.svg')" aria-hidden="true"></span>
+              </button>
+              <div id="update-popover" class="update-popover" hidden>
+                <p class="update-popover-title">Update available</p>
+                <p id="update-popover-copy" class="update-popover-copy">A newer version is ready.</p>
+                <a id="update-popover-link" class="update-popover-link" href="#" target="_blank" rel="noreferrer">Open releases</a>
+              </div>
+            </span>
+          </p>
+          <p class="settings-footer-line settings-footer-legal">
+            <span id="settings-copyright">© 2026</span>
+            <a class="settings-brand-link" href="https://quintix.netlify.app" target="_blank" rel="noreferrer">Quintix Labs</a>.
+            <span>All rights reserved.</span>
+          </p>
+        </div>
+        <div id="settings-links" class="settings-links">
+          <a id="settings-github" class="settings-link" href="https://github.com/QuintixLabs/Relay" target="_blank" rel="noreferrer" aria-label="GitHub">
+            <span class="icon" style="--icon:url('/assets/icons/brand/github.svg')" aria-hidden="true"></span>
+          </a>
+          <a id="settings-kofi" class="settings-link" href="https://ko-fi.com/fr0stiwnl" target="_blank" rel="noreferrer" aria-label="Ko-fi">
+            <span class="icon" style="--icon:url('/assets/icons/brand/ko-fi.svg')" aria-hidden="true"></span>
+          </a>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Change instance password -->
+    <dialog id="password-dialog" class="device-dialog confirm-dialog">
+      <form id="password-form" class="device-form" method="dialog">
+        <!-- Password modal heading -->
+        <header class="device-form-header">
+          <div>
+            <p class="app-title">Change password</p>
+            <p id="password-dialog-copy" class="app-state">Update the saved password for this instance.</p>
+          </div>
+        </header>
+
+        <!-- Env-managed password note -->
+        <p id="password-env-note" class="settings-password-note" hidden>
+          This instance is using a password from the <code>.env</code> file. Change it there and restart your instance.
+        </p>
+
+        <!-- Password input fields -->
+        <div id="password-fields">
+          <div class="field field-full">
+            <span>Current password</span>
+            <input id="current-password" name="currentPassword" type="password" autocomplete="current-password" placeholder="Current password" required />
+          </div>
+
+          <div class="field field-full">
+            <span>New password</span>
+            <input id="next-password" name="nextPassword" type="password" autocomplete="new-password" placeholder="New password" required />
+          </div>
+
+          <div class="field field-full">
+            <span>Confirm new password</span>
+            <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Confirm new password" required />
+          </div>
+        </div>
+
+        <!-- Password form feedback -->
+        <p id="password-message" class="form-message"></p>
+
+        <!-- Password form actions -->
+        <footer class="device-form-actions">
+          <button id="password-submit" class="primary-button" type="submit">Change password</button>
+          <button id="cancel-password-dialog" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Confirm password before exporting backup -->
+    <dialog id="backup-password-dialog" class="device-dialog confirm-dialog">
+      <form id="backup-password-form" class="device-form" method="dialog">
+        <header class="device-form-header">
+          <div>
+            <p class="app-title">Export backup</p>
+            <p id="backup-password-copy" class="app-state">Enter your current Hub password to export a backup with device secrets.</p>
+          </div>
+        </header>
+
+        <div class="field field-full">
+          <span>Current password</span>
+          <input id="backup-password-input" name="password" type="password" autocomplete="current-password" placeholder="Current password" required />
+        </div>
+
+        <p id="backup-password-message" class="form-message"></p>
+
+        <footer class="device-form-actions">
+          <button id="backup-password-submit" class="primary-button" type="submit">Export</button>
+          <button id="cancel-backup-password-dialog" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Reset Relay data -->
+    <dialog id="reset-dialog" class="device-dialog confirm-dialog">
+      <form id="reset-form" class="device-form" method="dialog">
+        <!-- Reset modal heading -->
+        <header class="device-form-header">
+          <div>
+            <p class="app-title">Reset Relay data</p>
+            <p class="app-state">This will remove every device, space, and saved order. Type <strong>DELETE</strong> to continue.</p>
+          </div>
+        </header>
+
+        <!-- Destructive confirmation field -->
+        <div class="field field-full">
+          <span>Confirmation</span>
+          <input id="reset-confirm-input" name="confirm" type="text" placeholder="DELETE" autocomplete="off" required />
+        </div>
+
+        <!-- Reset form feedback -->
+        <p id="reset-message" class="form-message"></p>
+
+        <!-- Reset form actions -->
+        <footer class="device-form-actions">
+          <button id="reset-submit" class="primary-button danger-button" type="submit" disabled>Reset Relay data</button>
+          <button id="cancel-reset-dialog" class="secondary-button" type="button">Cancel</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- Local scripts -->
+    <script type="module" src="/js/settings/index.js?v=%APP_VERSION%"></script>
+
+  </body>
+</html>
