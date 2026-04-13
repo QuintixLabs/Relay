@@ -25,7 +25,10 @@ export function updateRenderedDeviceStatusesView({ currentDeviceStatuses, device
     }
 
     if (status.os) {
-      const os = String(status.os || "unknown").trim() || "unknown";
+      const reportedOs = String(status.os || "unknown").trim() || "unknown";
+      const currentOs = String(row.dataset.deviceOs || "").trim() || "unknown";
+      const os = reportedOs !== "unknown" ? reportedOs : currentOs;
+
       row.dataset.deviceOs = os;
 
       if (icon && iconElement) {

@@ -1660,7 +1660,7 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
   background: var(--panel-2);
 }
 
-.action-button span {
+.action-button > span:not(.icon) {
   white-space: nowrap;
 }
 
@@ -2740,7 +2740,7 @@ html[data-device-drag-active="true"] .row-delete-trigger:hover {
     padding: 0 10px;
   }
 
-  .action-button span {
+  .action-button > span:not(.icon) {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;

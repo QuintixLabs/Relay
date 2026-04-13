@@ -350,10 +350,16 @@ export function validateDeviceInput(input, existingDevices, currentDeviceId = nu
 // --------------------------------------------------------------------------
 export async function proxyDeviceAction(device, action) {
   const target = getPresenceTarget(device);
-  const candidates = [
-    new URL(`/${action}`, `http://${target.host}:${target.port}`),
-    new URL(`/api/power/${action}`, `http://${target.host}:${target.port}`)
-  ];
+  let candidates;
+
+  try {
+    candidates = [
+      new URL(`/${action}`, `http://${target.host}:${target.port}`),
+      new URL(`/api/power/${action}`, `http://${target.host}:${target.port}`)
+    ];
+  } catch {
+    throw new Error("Invalid IP / Host");
+  }
 
   let lastError = null;
 
