@@ -117,7 +117,9 @@ export function createHubLoaders({
       const payload = await api("/api/device-statuses");
       state.currentDeviceStatuses = payload.statuses || {};
     } catch {
-      state.currentDeviceStatuses = Object.fromEntries(
+      // Keep the last known statuses if a single poll fails.
+      // A brief fetch hiccup should not make every device flap offline in the UI.
+      state.currentDeviceStatuses ||= Object.fromEntries(
         state.currentDevices.map((device) => [device.id, { state: "offline" }])
       );
     }
