@@ -67,10 +67,18 @@ By default, the command runs at: [http://127.0.0.1:3010](http://127.0.0.1:3010).
 
 Run Relay via Docker:
 
+Create the config folder first:
+
+```bash
+mkdir -p ./config
+```
+
+Then run:
+
 ```bash
 docker run -d \
   --name relay \
-  -p 3010:3010 \
+  --network host \
   -v $(pwd)/config:/app/config \
   ghcr.io/quintixlabs/relay:latest
 ```
