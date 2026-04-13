@@ -1,6 +1,6 @@
 {
   "name": "relay",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Self-hosted tool to control, manage, and wake your devices from anywhere",
   "private": true,
   "type": "module",
