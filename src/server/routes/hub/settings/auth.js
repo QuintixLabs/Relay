@@ -6,15 +6,11 @@
 
 import {
   getRememberDuration,
+  isLocalSetupRequest,
   matchesRoute,
   requireMutationAccess,
   sendRouteError
 } from "./helpers.js";
-
-function isLocalSetupHost(HOST) {
-  const normalizedHost = String(HOST || "").trim().toLowerCase();
-  return normalizedHost === "127.0.0.1" || normalizedHost === "::1" || normalizedHost === "localhost";
-}
 
 function validateSetupPassword(password, confirmPassword, res, sendJson) {
   if (!password) {
@@ -60,7 +56,6 @@ function validatePasswordChangeInput(currentPassword, nextPassword, confirmPassw
 }
 
 export function createHubSettingsAuthRouteHandler({
-  HOST,
   changeHubPassword,
   clearAllHubSessions,
   clearHubSession,
@@ -84,7 +79,7 @@ export function createHubSettingsAuthRouteHandler({
       return true;
     }
 
-    if (!isLocalSetupHost(HOST)) {
+    if (!isLocalSetupRequest(req)) {
       sendJson(res, 403, { error: "First-time setup is only allowed from this machine." });
       return true;
     }

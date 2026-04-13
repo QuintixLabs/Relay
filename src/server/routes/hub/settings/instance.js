@@ -5,16 +5,12 @@
 */
 
 import {
+  isLocalSetupRequest,
   matchesRoute,
   requireMutationAccess,
   requireReadAccess,
   sendRouteError
 } from "./helpers.js";
-
-function isLocalSetupHost(HOST) {
-  const normalizedHost = String(HOST || "").trim().toLowerCase();
-  return normalizedHost === "127.0.0.1" || normalizedHost === "::1" || normalizedHost === "localhost";
-}
 
 function sendSettingsResponse(res, settings, hasEnvHubPassword, sendJson, statusCode = 200, extra = {}) {
   sendJson(res, statusCode, {
@@ -28,7 +24,6 @@ function sendSettingsResponse(res, settings, hasEnvHubPassword, sendJson, status
 }
 
 export function createHubSettingsInstanceRouteHandler({
-  HOST,
   MAX_SPACES,
   RELEASES_URL,
   getAppVersion,
@@ -55,7 +50,7 @@ export function createHubSettingsInstanceRouteHandler({
       ok: true,
       maxSpaces: MAX_SPACES,
       setupRequired: !hasHubPassword(),
-      setupBlocked: !hasHubPassword() && !isLocalSetupHost(HOST),
+      setupBlocked: !hasHubPassword() && !isLocalSetupRequest(req),
       version,
       latestVersion,
       releasesUrl: RELEASES_URL
