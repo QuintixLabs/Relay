@@ -1,0 +1,20 @@
+name: Feature request
+description: Idea or improvement for Relay
+labels: [feature]
+body:
+  - type: textarea
+    attributes:
+      label: What do you want to see?
+      description: Describe the feature simply.
+      placeholder: I would love if Relay...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Why is it useful?
+      description: Why would you or others need this?
+      placeholder: This helps because...
+  - type: textarea
+    attributes:
+      label: Extra context
+      description: Screenshots, examples, or similar tools you like.
