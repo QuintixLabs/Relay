@@ -215,14 +215,18 @@ export function getPresenceStatuses(devices) {
 }
 
 export async function recordPresence(deviceId, payload, device = null) {
+  const previousEntry = devicePresence.get(deviceId) || null;
+
   devicePresence.set(deviceId, {
     lastSeenAt: Date.now(),
     host: String(payload.host || ""),
     port: Number(payload.port || 0),
     platform: String(payload.platform || ""),
     os: normalizePresenceOs(payload.platform || payload.os),
-    reachable: false,
-    probePending: false
+    reachable: previousEntry?.reachable === true,
+    probePending: false,
+    probedHost: previousEntry?.probedHost || "",
+    probedPort: Number(previousEntry?.probedPort || 0)
   });
 
   await probePresence(deviceId, device);
