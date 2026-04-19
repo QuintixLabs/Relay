@@ -6,6 +6,7 @@
 
 <p align="center">
 <a href="#-features">⭐ Features</a> •
+<a href="#-showcase">📸 Showcase</a> •
 <a href="#-self-hosting">🏡 Self Hosting</a> •
 <a href="#-using-agent">🔌 Using Agent</a>
 </p>
@@ -28,6 +29,10 @@
 - Lightweight **Electron** app for your devices
 - **Export** or **Import** your data as a single **Relay** backup file
 - *And much more...!*
+
+## 📸 Showcase
+
+https://github.com/user-attachments/assets/6c337ba2-f3b9-4cc0-9fc4-4f81c0f1b985
 
 ## 🏡 Self Hosting
 
