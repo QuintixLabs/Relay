@@ -5,6 +5,7 @@
 
 
 <p align="center">
+<a href="#-why-this-exists">💭 Why this exists</a> •
 <a href="#-features">⭐ Features</a> •
 <a href="#-showcase">📸 Showcase</a> •
 <a href="#-self-hosting">🏡 Self Hosting</a> •
@@ -19,6 +20,10 @@
 > I do not have access to a macOS device, so the Electron app and the app itself have not been tested there. Things may not work as expected on macOS.
 > 
 > If you run into issues, feel free to open an issue. PRs are also welcome if you want to help improve macOS support.
+
+## 💭 Why this exists
+
+*Well...* this exists because I usually leave my **Main PC** running when I get into bed, thinking I might go back to it but most of the time I don't, and since I don't feel like getting up when I'm tired, this lets me **shut it down**, **restart it**, **sleep it** or **wake it** straight from my **phone**. So I made it open source in case anyone else needs it too.
 
 ## ⭐ Features
 
