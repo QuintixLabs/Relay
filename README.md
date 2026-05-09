@@ -31,7 +31,7 @@
 - **Wake-on-LAN** support
 - See which devices are **online** or **offline** in real time
 - Clean and simple **UI**
-- Lightweight **Electron** app for remote device management (yes, really. `~38-39 MB` RAM while idle)
+- Lightweight **Electron** app for your devices (yes, really. `~38-39 MB` RAM while idle)
 - **Export** or **Import** your data as a single **Relay** backup file
 - *And much more...!*
 
