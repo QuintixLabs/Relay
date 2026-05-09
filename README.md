@@ -31,7 +31,7 @@
 - **Wake-on-LAN** support
 - See which devices are **online** or **offline** in real time
 - Clean and simple **UI**
-- Lightweight **Electron** app for your devices
+- Lightweight **Electron** app for remote device management (yes, really. `~38-39 MB` RAM while idle)
 - **Export** or **Import** your data as a single **Relay** backup file
 - *And much more...!*
 
@@ -52,13 +52,28 @@ cd Relay
 ```
 
 ### 2. Install Relay
-Use one of these:
 
 ```bash
 npm install
 ```
 
-### 3. Start Relay
+### 3. Create your `.env` file
+
+```bash
+cp .env.example .env
+```
+
+By default, Relay runs on [http://127.0.0.1:3010](http://127.0.0.1:3010), which is only accessible from the same machine.
+
+If you want other devices to reach your Relay Hub, uncomment this in `.env`:
+
+```env
+HOST=0.0.0.0
+```
+
+Then access Relay using your machine's **LAN IP**, **Tailscale IP**, or **domain**.
+
+### 4. Start Relay
 **Development (auto-reload) :**
 ```bash
 npm run dev
@@ -68,8 +83,6 @@ npm run dev
 ```bash
 npm start
 ```
-
-By default, the command runs at: [http://127.0.0.1:3010](http://127.0.0.1:3010). You can change this by setting the **PORT** value in `.env`.
 
 #
 
@@ -89,7 +102,7 @@ Then run:
 docker run -d \
   --name relay \
   --network host \
-  -v $(pwd)/config:/app/config \
+  -v "$(pwd)/config:/app/config" \
   ghcr.io/quintixlabs/relay:latest
 ```
 
